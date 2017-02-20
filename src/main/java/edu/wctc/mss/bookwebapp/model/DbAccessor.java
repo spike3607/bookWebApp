@@ -25,4 +25,7 @@ public interface DbAccessor {
 
     void openConnection(String driverClass, String url, String username, String pwd) throws ClassNotFoundException, SQLException;
     
+    int createRecord(String tableName, List<String> colNames, List<Object> colValues) throws Exception;
+    
+    int deleteRecordByPK(String tableName, String primaryKey, int value) throws Exception;
 }

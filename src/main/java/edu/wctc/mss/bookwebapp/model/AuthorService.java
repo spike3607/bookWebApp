@@ -5,19 +5,31 @@
  */
 package edu.wctc.mss.bookwebapp.model;
 
-import java.util.ArrayList;
-import java.util.Date;
+import java.sql.SQLException;
+import java.util.List;
+
 
 /**
  *
  * @author Spike
  */
 public class AuthorService {
-    public ArrayList findAllAuthors() {
-        ArrayList al = new ArrayList();
-        al.add(new Author(1, "Mike", new Date()));
-        al.add(new Author(2, "Dave", new Date()));
-        al.add(new Author(3, "Steve", new Date()));
-        return al;
+    private IAuthorDao authorDao;
+    private String driverClass;
+    private String url;
+    private String username;
+    private String password;
+
+    public AuthorService(IAuthorDao authorDao, String driverClass, String url, String username, String password) {
+        this.authorDao = authorDao;
+        this.driverClass = driverClass;
+        this.url = url;
+        this.username = username;
+        this.password = password;
     }
+   
+    public List<Author> getAllAuthors() throws ClassNotFoundException, SQLException {
+        return authorDao.getAuthorList("author", 50);
+    }
+    
 }

@@ -7,6 +7,7 @@ package edu.wctc.mss.bookwebapp.model;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -75,31 +76,51 @@ public class MySqlDbAccessor implements DbAccessor {
         return results;
     }
     
-//    public int deleteById(String table, String idColName, Object id) {
-//        String sql1 = "DELETE FROM " + table + " WHERE " + idColName + " = ";
-//        String sql2 = "";
-//        
-//        if(id instanceof String) {
-//            sql2 = "'" + id.toString() + "'";
-//        }
-//        else {
-//            sql2 = id.toString();
-//        }
-//        
-//        String sql = sql1 + sql2;
-//    }
+public int deleteRecordByPK(String tableName, String primaryKey, int value) throws Exception {
+        //DELETE FROM author WHERE author_id = 1
+        String sql = "DELETE FROM " + tableName + " WHERE " + primaryKey + " = ?";
+        PreparedStatement stmt = conn.prepareStatement(sql);
+        stmt.setObject(1, value);
+        int recordsUpdated = stmt.executeUpdate();
+        return recordsUpdated;
+    }
+
+public int createRecord(String tableName, List<String> colNames, List<Object> colValues) throws Exception {
+        //INSERT INTO author (author_id, author_name, date_added) VALUES ('4', 'max maxian', '2009-12-24')
+
+        String sql = "INSERT INTO " + tableName + "("; //first_name,last_name)" + " VALUES('Billy','Carter')";
+
+        for (int i = 0; i < colNames.size(); i++) {
+            if (i == (colNames.size() - 1)) {
+                sql += colNames.get(i) + ") VALUES(";
+            } else {
+                sql += colNames.get(i) + ",";
+            }
+        }
+
+        for (int i = 0; i < colValues.size(); i++) {
+            if (i == (colValues.size() - 1)) {
+                sql += " ? )";
+            } else {
+                sql += " ? ,";
+            }
+        }
+
+        System.out.println(sql);
+
+        PreparedStatement pstmt = conn.prepareStatement(sql);
+
+        for (int i = 0; i < colValues.size(); i++) {
+            pstmt.setObject(i + 1, colValues.get(i));
+        }
+
+        int updateCount = pstmt.executeUpdate();
+
+        return updateCount;
+    }
     
     public static void main(String[] args) throws Exception {
-        MySqlDbAccessor db = new MySqlDbAccessor();
-        db.openConnection("com.mysql.jdbc.Driver", "jdbc:mysql://localhost:3306/book",
-                "root", "admin");
         
-        List<Map<String,Object>> records = db.getAllRecords("author", 50);
-        
-        db.closeConnection();
-        for (Map<String,Object> rec : records) {
-            System.out.println(rec);
-        }
         
     }
 }

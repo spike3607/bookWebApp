@@ -60,6 +60,30 @@ public class AuthorDao implements IAuthorDao {
         
         return records;
     }
+    
+    public void addAuthor(String name, Date date) throws Exception {
+        db.openConnection(driverClass, url, username, password);
+
+        ArrayList columns = new ArrayList();
+        columns.add("author_name");
+        columns.add("date_added");
+
+        ArrayList values = new ArrayList();
+        values.add(name);
+        values.add(date);
+
+        db.createRecord("author", columns, values);
+
+        db.closeConnection();
+    }
+    
+    public void deleteAuthor(Object key) throws Exception {
+        db.openConnection(driverClass, url, username, password);
+
+        db.deleteRecordByPK("author", "author_id", (int) key);
+
+        db.closeConnection();
+    }
 
     @Override
     public DbAccessor getDb() {
@@ -148,12 +172,12 @@ public class AuthorDao implements IAuthorDao {
         return true;
     }
     public static void main(String[] args) throws ClassNotFoundException, SQLException {
-        IAuthorDao dao = new AuthorDao(new MySqlDbAccessor(),"com.mysql.jdbc.Driver", 
-                                        "jdbc:mysql://localhost:3306/book",
-                                         "root", "admin");
-        
-        List<Author> list = dao.getAuthorList("author", 50);
-        
-        System.out.println(list);
+//        IAuthorDao dao = new AuthorDao(new MySqlDbAccessor(),"com.mysql.jdbc.Driver", 
+//                                        "jdbc:mysql://localhost:3306/book",
+//                                         "root", "admin");
+//        
+//        List<Author> list = dao.getAuthorList("author", 50);
+//        
+//        System.out.println(list);
     }
 }
