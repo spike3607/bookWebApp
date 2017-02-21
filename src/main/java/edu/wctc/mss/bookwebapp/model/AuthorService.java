@@ -44,4 +44,7 @@ public class AuthorService {
     public void deleteAuthor(Object key) throws Exception {
         authorDao.deleteAuthor(key);
     }
+    public static void main(String[] args) throws Exception {
+      
+    }
 }

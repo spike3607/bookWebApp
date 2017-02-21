@@ -19,11 +19,11 @@ public interface IAuthorDao {
 
     List<Author> getAuthorList(String tableName, int maxRecords) throws ClassNotFoundException, SQLException;
 
-    void addAuthor(String name, Date date) throws Exception;
+    void addAuthor(String name, Date date) throws SQLException;
     
-    void deleteAuthor(Object key) throws Exception;
+    void deleteAuthor(Object key) throws SQLException;
     
-    void updateAuthor(Object key, String columnName, Object newObject) throws Exception;
+    void updateAuthor(Object key, String columnName, Object newObject) throws SQLException;
     
     DbAccessor getDb();
 

@@ -24,6 +24,9 @@ public class AuthorDao implements IAuthorDao {
     String username;
     String password;
 
+    public AuthorDao() {
+    }
+
     public AuthorDao(DbAccessor db, String driverClass, String url, String username, String password) {
         this.db = db;
         this.driverClass = driverClass;
@@ -61,6 +64,7 @@ public class AuthorDao implements IAuthorDao {
         return records;
     }
     
+    @Override
     public void addAuthor(String name, Date date) throws Exception {
         db.openConnection(driverClass, url, username, password);
 
@@ -77,6 +81,7 @@ public class AuthorDao implements IAuthorDao {
         db.closeConnection();
     }
     
+    @Override
     public void deleteAuthor(Object key) throws Exception {
         db.openConnection(driverClass, url, username, password);
 
@@ -85,6 +90,7 @@ public class AuthorDao implements IAuthorDao {
         db.closeConnection();
     }
     
+    @Override
     public void updateAuthor(Object key, String columnName, Object newObject) throws Exception {
         db.openConnection(driverClass, url, username, password);
 
@@ -180,12 +186,12 @@ public class AuthorDao implements IAuthorDao {
         return true;
     }
     public static void main(String[] args) throws ClassNotFoundException, SQLException {
-//        IAuthorDao dao = new AuthorDao(new MySqlDbAccessor(),"com.mysql.jdbc.Driver", 
-//                                        "jdbc:mysql://localhost:3306/book",
-//                                         "root", "admin");
-//        
-//        List<Author> list = dao.getAuthorList("author", 50);
-//        
-//        System.out.println(list);
+        IAuthorDao dao = new AuthorDao(new MySqlDbAccessor(),"com.mysql.jdbc.Driver", 
+                                        "jdbc:mysql://localhost:3306/book",
+                                         "root", "admin");
+        
+        List<Author> list = dao.getAuthorList("author", 50);
+        
+        System.out.println(list);
     }
 }

@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package edu.wctc.mss.bookwebapp.model;
 
 import java.sql.SQLException;
@@ -17,17 +12,16 @@ public interface DbAccessor {
 
     void closeConnection() throws SQLException;
 
-    //    public List<Map<String,Object>> getAllRecords(String table, int maxRecords,
-    //                                            List<String> colNames) throws SQLException {
-    //
-    //    }
     List<Map<String, Object>> getAllRecords(String table, int maxRecords) throws SQLException;
+    
+    Map<String,Object> getRecordByPK(String tableName, String keyIdentifier, Object key) throws SQLException;
 
     void openConnection(String driverClass, String url, String username, String pwd) throws ClassNotFoundException, SQLException;
     
-    int createRecord(String tableName, List<String> colNames, List<Object> colValues) throws Exception;
+    int createRecord(String tableName, List<String> colNames, List<Object> colValues) throws SQLException;
     
-    int deleteRecordByPK(String tableName, String primaryKey, int value) throws Exception;
+    int deleteRecordByPK(String tableName, String keyIdentifier, Object key) throws SQLException;
     
-    int updateRecordByPK(String tableName, String columnName, Object newValue, String keyIdentifier, Object key) throws Exception;
+    int updateRecordByPK(String tableName, List<String> colNames, List<Object> colValues, 
+                            String keyIdentifier, Object key) throws SQLException;
 }

@@ -5,10 +5,12 @@
  */
 package edu.wctc.mss.bookwebapp.controller;
 
+import edu.wctc.mss.bookwebapp.model.Author;
+import edu.wctc.mss.bookwebapp.model.AuthorDao;
 import edu.wctc.mss.bookwebapp.model.AuthorService;
+import edu.wctc.mss.bookwebapp.model.DbAccessor;
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.ArrayList;
+import java.util.List;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -22,6 +24,13 @@ import javax.servlet.http.HttpServletResponse;
  */
 @WebServlet(name = "AuthorController", urlPatterns = {"/AuthorController"})
 public class AuthorController extends HttpServlet {
+    
+    private DbAccessor db;
+
+    private String driverClassName = "com.mysql.jdbc.Driver";
+    private String url = "jdbc:mysql://localhost:3306/book";
+    private String userName = "root";
+    private String password = "admin";
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -35,11 +44,16 @@ public class AuthorController extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
+        try {
         
-        AuthorService serv = new AuthorService();
-        ArrayList list = serv.findAllAuthors();
+        
+        List<Author> list = serv.getAllAuthors();
         
         request.setAttribute("authors", list);
+        }
+        catch (Exception e) {
+            System.out.println(e.getLocalizedMessage());
+        }
         
         RequestDispatcher view = request.getRequestDispatcher("/listAuthors.jsp");
         view.forward(request, response);
