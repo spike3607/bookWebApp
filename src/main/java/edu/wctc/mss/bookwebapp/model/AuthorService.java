@@ -6,6 +6,7 @@
 package edu.wctc.mss.bookwebapp.model;
 
 import java.sql.SQLException;
+import java.util.Date;
 import java.util.List;
 
 
@@ -29,7 +30,18 @@ public class AuthorService {
     }
    
     public List<Author> getAllAuthors() throws ClassNotFoundException, SQLException {
-        return authorDao.getAuthorList("author", 50);
+        return authorDao.getAuthorList("author", 500);
     }
     
+    public void addAuthor(String name, Date dateCreated) throws Exception {
+        authorDao.addAuthor(name, dateCreated);
+    }
+
+    public void updateAuthor(Object key, String columnName, Object newObject) throws Exception {
+        authorDao.updateAuthor(key, columnName, newObject);
+    }
+
+    public void deleteAuthor(Object key) throws Exception {
+        authorDao.deleteAuthor(key);
+    }
 }

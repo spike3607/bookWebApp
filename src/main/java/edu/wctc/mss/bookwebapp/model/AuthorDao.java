@@ -84,6 +84,14 @@ public class AuthorDao implements IAuthorDao {
 
         db.closeConnection();
     }
+    
+    public void updateAuthor(Object key, String columnName, Object newObject) throws Exception {
+        db.openConnection(driverClass, url, username, password);
+
+        db.updateRecordByPK("author", columnName, newObject, "author_id", key);
+
+        db.closeConnection();
+    }
 
     @Override
     public DbAccessor getDb() {

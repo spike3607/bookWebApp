@@ -28,4 +28,6 @@ public interface DbAccessor {
     int createRecord(String tableName, List<String> colNames, List<Object> colValues) throws Exception;
     
     int deleteRecordByPK(String tableName, String primaryKey, int value) throws Exception;
+    
+    int updateRecordByPK(String tableName, String columnName, Object newValue, String keyIdentifier, Object key) throws Exception;
 }

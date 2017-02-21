@@ -6,6 +6,7 @@
 package edu.wctc.mss.bookwebapp.model;
 
 import java.sql.SQLException;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -18,6 +19,12 @@ public interface IAuthorDao {
 
     List<Author> getAuthorList(String tableName, int maxRecords) throws ClassNotFoundException, SQLException;
 
+    void addAuthor(String name, Date date) throws Exception;
+    
+    void deleteAuthor(Object key) throws Exception;
+    
+    void updateAuthor(Object key, String columnName, Object newObject) throws Exception;
+    
     DbAccessor getDb();
 
     String getDriverClass();
