@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package edu.wctc.mss.bookwebapp.model;
 
 import java.sql.SQLException;
@@ -36,11 +31,11 @@ public class AuthorDao implements IAuthorDao {
     }
 
     @Override
-    public List<Author> getAuthorList(String tableName, int maxRecords) throws ClassNotFoundException, SQLException {
+    public List<Author> getAuthorList(int maxRecords) throws ClassNotFoundException, SQLException {
         List<Author> records = new ArrayList<>();
 
         db.openConnection(driverClass, url, username, password);
-        List<Map<String, Object>> rawData = db.getAllRecords(tableName, maxRecords);
+        List<Map<String, Object>> rawData = db.getAllRecords("author", maxRecords);
 
         for (Map<String, Object> rawRec : rawData) {
             Author author = new Author();
@@ -58,14 +53,38 @@ public class AuthorDao implements IAuthorDao {
 
             records.add(author);
         }
-        
+
         db.closeConnection();
-        
+
         return records;
     }
-    
+
     @Override
-    public void addAuthor(String name, Date date) throws Exception {
+    public Author getAuthor(Object key) throws SQLException, ClassNotFoundException {
+        Author author = new Author();
+
+        db.openConnection(driverClass, url, username, password);
+        Map<String, Object> rawRec = db.getRecordByPK("author", "author_id", key);
+
+        Object objId = rawRec.get("author_id");
+        Integer authorId = (Integer) objId;
+        author.setAuthorId(authorId);
+
+        Object objName = rawRec.get("author_name");
+        String name = (objName != null) ? objName.toString() : "";
+        author.setAuthorName(name);
+
+        Object objDate = rawRec.get("date_added");
+        Date date = (objDate != null) ? (Date) objDate : null;
+        author.setDateAdded(date);
+
+        db.closeConnection();
+
+        return author;
+    }
+
+    @Override
+    public void addAuthor(String name, Date date) throws SQLException, ClassNotFoundException {
         db.openConnection(driverClass, url, username, password);
 
         ArrayList columns = new ArrayList();
@@ -80,23 +99,46 @@ public class AuthorDao implements IAuthorDao {
 
         db.closeConnection();
     }
-    
+
     @Override
-    public void deleteAuthor(Object key) throws Exception {
+    public void deleteAuthor(Object key) throws SQLException, ClassNotFoundException {
         db.openConnection(driverClass, url, username, password);
 
-        db.deleteRecordByPK("author", "author_id", (int) key);
+        db.deleteRecordByPK("author", "author_id", key);
 
         db.closeConnection();
     }
-    
+
     @Override
-    public void updateAuthor(Object key, String columnName, Object newObject) throws Exception {
+    public void updateAuthor(Object key, String newName) throws SQLException, ClassNotFoundException {
         db.openConnection(driverClass, url, username, password);
 
-        db.updateRecordByPK("author", columnName, newObject, "author_id", key);
+        List<String> columns = new ArrayList<>();
+        columns.add("author_name");
 
+        List<Object> values = new ArrayList<>();
+        values.add(newName);
+
+        db.updateRecordByPK("author", columns, values, "author_id", key);
         db.closeConnection();
+    }
+
+    public static void main(String[] args) throws ClassNotFoundException, SQLException {
+        IAuthorDao dao = new AuthorDao(new MySqlDbAccessor(), "com.mysql.jdbc.Driver",
+                "jdbc:mysql://localhost:3306/book", "root", "admin");
+        Author author = dao.getAuthor(6);
+        System.out.println(author);
+        
+//        dao.addAuthor("New Author", new Date());
+
+//        dao.deleteAuthor(10);
+//        dao.updateAuthor(4, "Steve Schoenauer");
+
+        List<Author> list = dao.getAuthorList(50);
+        for (Author a : list) {
+            System.out.println(a);
+        }
+
     }
 
     @Override
@@ -184,14 +226,5 @@ public class AuthorDao implements IAuthorDao {
             return false;
         }
         return true;
-    }
-    public static void main(String[] args) throws ClassNotFoundException, SQLException {
-        IAuthorDao dao = new AuthorDao(new MySqlDbAccessor(),"com.mysql.jdbc.Driver", 
-                                        "jdbc:mysql://localhost:3306/book",
-                                         "root", "admin");
-        
-        List<Author> list = dao.getAuthorList("author", 50);
-        
-        System.out.println(list);
     }
 }

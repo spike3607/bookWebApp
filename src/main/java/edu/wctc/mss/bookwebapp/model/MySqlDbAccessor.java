@@ -24,7 +24,6 @@ public class MySqlDbAccessor implements DbAccessor {
     @Override
     public void openConnection(String driverClass, String url, String username, String pwd)
             throws ClassNotFoundException, SQLException {
-        //needs validation
         Class.forName(driverClass);
         conn = DriverManager.getConnection(url, username, pwd);
     }
@@ -67,7 +66,6 @@ public class MySqlDbAccessor implements DbAccessor {
     @Override
     public Map<String,Object> getRecordByPK(String tableName, String keyIdentifier, Object key) throws SQLException {
         String sql = "SELECT * FROM " + tableName + " WHERE " + keyIdentifier + "= ?";
-        System.out.println(sql);
 
         PreparedStatement pstmt = conn.prepareStatement(sql);
         pstmt.setObject(1, key);
@@ -87,7 +85,7 @@ public class MySqlDbAccessor implements DbAccessor {
 
     @Override
     public int deleteRecordByPK(String tableName, String keyIdentifier, Object key) throws SQLException {
-        //DELETE FROM author WHERE author_id = 1
+
         String sql = "DELETE FROM " + tableName + " WHERE " + keyIdentifier + " = ?";
         PreparedStatement pstmt = conn.prepareStatement(sql);
         pstmt.setObject(1, key);
@@ -97,9 +95,7 @@ public class MySqlDbAccessor implements DbAccessor {
 
     @Override
     public int createRecord(String tableName, List<String> colNames, List<Object> colValues) throws SQLException {
-        //INSERT INTO author (author_id, author_name, date_added) VALUES ('4', 'max maxian', '2009-12-24')
 
-        //Using StringJoiner
         StringJoiner sj = new StringJoiner(",", "(", ")");
         String sql = "INSERT INTO " + tableName + " ";
         for (int i = 0; i < colNames.size(); i++) {
@@ -111,26 +107,6 @@ public class MySqlDbAccessor implements DbAccessor {
             sj.add("?");
         }
         sql += sj.toString();
-
-        //Old Method
-//        String sql = "INSERT INTO " + tableName + "(";
-//
-//        for (int i = 0; i < colNames.size(); i++) {
-//            if (i == (colNames.size() - 1)) {
-//                sql += colNames.get(i) + ") VALUES(";
-//            } else {
-//                sql += colNames.get(i) + ",";
-//            }
-//        }
-//
-//        for (int i = 0; i < colValues.size(); i++) {
-//            if (i == (colValues.size() - 1)) {
-//                sql += " ? )";
-//            } else {
-//                sql += " ? ,";
-//            }
-//        }
-        System.out.println(sql);
 
         PreparedStatement pstmt = conn.prepareStatement(sql);
 
@@ -146,7 +122,7 @@ public class MySqlDbAccessor implements DbAccessor {
     @Override
     public int updateRecordByPK(String tableName, List<String> colNames, List<Object> colValues,
             String keyIdentifier, Object key) throws SQLException {
-        //UPDATE author SET author_id='1', author_name='Mike Schoenauer', date_added='2009-12-24 WHERE author_id=1
+
         String sql = "UPDATE " + tableName + " SET ";
         StringJoiner sj = new StringJoiner(", ");
 
@@ -157,8 +133,6 @@ public class MySqlDbAccessor implements DbAccessor {
         }
         sql += sj.toString();
         sql += " WHERE " + keyIdentifier + "=" + key.toString();
-
-        System.out.println(sql);
 
         PreparedStatement pstmt = conn.prepareStatement(sql);
 
@@ -176,24 +150,24 @@ public class MySqlDbAccessor implements DbAccessor {
         DbAccessor db = new MySqlDbAccessor();
         db.openConnection("com.mysql.jdbc.Driver", "jdbc:mysql://localhost:3306/book", "root", "admin");
 
-//        ArrayList<String> newRecordColumns = new ArrayList<>();
-//        newRecordColumns.add("author_id");
-//        newRecordColumns.add("author_name");
-//        newRecordColumns.add("date_added");
+        ArrayList<String> newRecordColumns = new ArrayList<>();
+        newRecordColumns.add("author_id");
+        newRecordColumns.add("author_name");
+        newRecordColumns.add("date_added");
+
+        ArrayList<Object> newRecordValues = new ArrayList<>();
+        newRecordValues.add(2);
+        newRecordValues.add("Testing Schoenauer");
+        newRecordValues.add(new Date());
 //
-//        ArrayList<Object> newRecordValues = new ArrayList<>();
-//        newRecordValues.add(13);
-//        newRecordValues.add("Test Complete Schoenauer");
-//        newRecordValues.add(new Date(15, 4, 19));
-//
-//        int recordsUpdated = db.updateRecordByPK("author", newRecordColumns, newRecordValues, "author_id", 13);
-//        System.out.println(recordsUpdated);
+        int recordsUpdated = db.updateRecordByPK("author", newRecordColumns, newRecordValues, "author_id", 2);
+        System.out.println(recordsUpdated);
 //        db.createRecord("author", newRecordColumns, newRecordValues);
-//        int recordsUpdated = db.deleteRecordByPK("author", "author_id", 11);
+//        int recordsUpdated = db.deleteRecordByPK("author", "author_id", 3);
 //        System.out.println(recordsUpdated);
 
-        Map<String, Object> record = db.getRecordByPK("author", "author_id", 6);
-        System.out.println(record);
+//        Map<String, Object> record = db.getRecordByPK("author", "author_id", 6);
+//        System.out.println(record);
 
         List<Map<String, Object>> records = db.getAllRecords("author", 500);
         for (Map<String, Object> r : records) {

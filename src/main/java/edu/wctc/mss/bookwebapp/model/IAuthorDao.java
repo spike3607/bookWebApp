@@ -17,13 +17,15 @@ public interface IAuthorDao {
 
     boolean equals(Object obj);
 
-    List<Author> getAuthorList(String tableName, int maxRecords) throws ClassNotFoundException, SQLException;
+    List<Author> getAuthorList(int maxRecords) throws ClassNotFoundException, SQLException;
+    
+    Author getAuthor(Object key) throws SQLException, ClassNotFoundException;
 
-    void addAuthor(String name, Date date) throws SQLException;
+    void addAuthor(String name, Date date) throws SQLException, ClassNotFoundException;
     
-    void deleteAuthor(Object key) throws SQLException;
+    void deleteAuthor(Object key) throws SQLException, ClassNotFoundException;
     
-    void updateAuthor(Object key, String columnName, Object newObject) throws SQLException;
+    void updateAuthor(Object key, String newName) throws SQLException, ClassNotFoundException;
     
     DbAccessor getDb();
 

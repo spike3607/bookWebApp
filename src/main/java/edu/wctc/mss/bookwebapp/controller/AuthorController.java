@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package edu.wctc.mss.bookwebapp.controller;
 
 import edu.wctc.mss.bookwebapp.model.Author;
@@ -10,6 +5,8 @@ import edu.wctc.mss.bookwebapp.model.AuthorDao;
 import edu.wctc.mss.bookwebapp.model.AuthorService;
 import edu.wctc.mss.bookwebapp.model.DbAccessor;
 import java.io.IOException;
+import java.sql.SQLException;
+import java.util.Date;
 import java.util.List;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -24,12 +21,12 @@ import javax.servlet.http.HttpServletResponse;
  */
 @WebServlet(name = "AuthorController", urlPatterns = {"/AuthorController"})
 public class AuthorController extends HttpServlet {
-    
-    private DbAccessor db;
 
-    private String driverClassName = "com.mysql.jdbc.Driver";
+    private AuthorService serv;
+
+    private String driverClass = "com.mysql.jdbc.Driver";
     private String url = "jdbc:mysql://localhost:3306/book";
-    private String userName = "root";
+    private String username = "root";
     private String password = "admin";
 
     /**
@@ -44,18 +41,60 @@ public class AuthorController extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
+
+        String destination = "/index.html";
+        String action = request.getParameter("action");
+
+        AuthorService authService = new AuthorService(driverClass, url, username, password);
+
         try {
-        
-        
-        List<Author> list = serv.getAllAuthors();
-        
-        request.setAttribute("authors", list);
-        }
-        catch (Exception e) {
+
+            if (action.equals("list")) {
+                List<Author> authors = authService.getAllAuthors();
+                request.setAttribute("authors", authors);
+                destination = "/listAuthors.jsp";
+
+            } else if (action.equals("add")) {
+                String newName = request.getParameter("newName");
+                authService.addAuthor(newName, new Date());
+
+                List<Author> authors = authService.getAllAuthors();
+                request.setAttribute("authors", authors);
+                destination = "/listAuthors.jsp";
+
+            } else if (action.equals("updateRedirect")) {
+                String id = request.getParameter("id");
+                request.setAttribute("id", id);
+                destination = "/editAuthor.jsp";
+            } else if (action.equals("update")) {
+                int id = Integer.parseInt(request.getParameter("id"));
+                String newName = request.getParameter("newName");
+                
+                authService.updateAuthor(id, newName);
+
+                List<Author> authors = authService.getAllAuthors();
+                request.setAttribute("authors", authors);
+                destination = "/listAuthors.jsp";
+
+            } else if (action.equals("delete")) {
+                int id = Integer.parseInt(request.getParameter("id"));
+                
+                authService.deleteAuthor(id);
+
+                List<Author> authors = authService.getAllAuthors();
+                request.setAttribute("authors", authors);
+                destination = "/listAuthors.jsp";
+
+            } else {
+                // Error
+                System.out.println("Unable to find action parameter");
+            }
+
+        } catch (ClassNotFoundException | SQLException e) {
             System.out.println(e.getLocalizedMessage());
         }
-        
-        RequestDispatcher view = request.getRequestDispatcher("/listAuthors.jsp");
+
+        RequestDispatcher view = request.getRequestDispatcher(destination);
         view.forward(request, response);
     }
 
